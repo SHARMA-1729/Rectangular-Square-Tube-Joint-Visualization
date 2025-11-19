@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Rectangular Tube Joint - Demo</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://unpkg.com 'unsafe-inline' 'unsafe-eval'">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="sidebar">
+    <h2>Tube Joint Builder</h2>
+    <div id="controls">
+      <label>Type:
+        <select id="tubeType">
+          <option value="rect">Rectangular</option>
+          <option value="square">Square</option>
+        </select>
+      </label>
+      <label>Width (mm): <input id="width" type="number" value="40"></label>
+      <label>Height (mm): <input id="height" type="number" value="20"></label>
+      <label>Thickness (mm): <input id="thickness" type="number" value="2"></label>
+      <label>Length (mm): <input id="length" type="number" value="200"></label>
+      <label>Angle (deg): <input id="angle" type="number" value="45"></label>
+      <button id="addTube">Add Tube</button>
+      <hr>
+      <label><input type="checkbox" id="snapAngle" checked> Snap to 15°/45°</label>
+      <label><input type="checkbox" id="wireframe"> Wireframe view</label>
+      <label><input type="checkbox" id="highlightJoint" checked> Highlight joint</label>
+      <div class="btn-row">
+        <button id="undo">Undo</button>
+        <button id="redo">Redo</button>
+      </div>
+      <hr>
+      <div id="tubeList"></div>
+    </div>
+    <footer>
+      <small>Built with Electron + Three.js — Demo project</small>
+    </footer>
+  </div>
+
+  <div id="canvasArea">
+    <div id="topbar">Use mouse to orbit/pan/zoom. Select a tube from list to transform.</div>
+    <div id="renderContainer"></div>
+  </div>
+
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.152.2/build/three.module.js"
+    }
+  }
+  </script>
+
+  <script type="module" src="renderer.js"></script>
+</body>
+</html>
