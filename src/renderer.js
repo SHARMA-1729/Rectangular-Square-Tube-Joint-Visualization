@@ -1,4 +1,5 @@
-
+// Basic renderer with Three.js: adds tubes (as hollow boxes) and detects bounding-box intersections
+// Use module imports for Three.js and OrbitControls
 import * as THREE from 'https://unpkg.com/three@0.152.2/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.152.2/examples/jsm/controls/OrbitControls.js';
 
@@ -11,7 +12,7 @@ function init() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0b1220);
 
- 
+
   const fallbackWidth = Math.max(1, container.clientWidth || (window.innerWidth - 320));
   const fallbackHeight = Math.max(1, container.clientHeight || (window.innerHeight - 60));
   camera = new THREE.PerspectiveCamera(45, fallbackWidth / fallbackHeight, 1, 10000);
@@ -26,7 +27,7 @@ function init() {
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
 
-  
+
   const grid = new THREE.GridHelper(1000, 40, 0x444444, 0x263244);
   scene.add(grid);
   const axes = new THREE.AxesHelper(200);
@@ -60,15 +61,15 @@ function animate(){
 function mmToUnit(v){ return v; } 
 
 function createHollowBox(width, height, thickness, length, wireframe=false){
-
+ 
   const outer = new THREE.BoxGeometry(length, height, width);
   const inner = new THREE.BoxGeometry(length - 2*thickness, height - 2*thickness, width - 2*thickness);
-
+ 
   const outerMat = new THREE.MeshStandardMaterial({metalness:0.2, roughness:0.6, wireframe:wireframe});
   const innerMat = new THREE.MeshStandardMaterial({color:0x0b1220, metalness:0.2, roughness:0.6});
   const outerMesh = new THREE.Mesh(outer, outerMat);
   const innerMesh = new THREE.Mesh(inner, innerMat);
-
+ 
   const g = new THREE.Group();
   g.add(outerMesh);
   innerMesh.scale.set(1,1,1);
@@ -95,12 +96,12 @@ function addTube(params){
 }
 
 function pushHistory(){
-  
+
   const snapshot = tubes.map(t => ({
     id: t.name,
-    position: t.position.clone(),
-    rotationY: t.rotation.y,
-    params: t.userData
+    params: Object.assign({}, t.userData),
+    position: [t.position.x, t.position.y, t.position.z],
+    rotationY: t.rotation.y
   }));
   history.past.push(snapshot);
   history.future = [];
@@ -123,19 +124,45 @@ function redo(){
 }
 
 function applySnapshot(snapshot){
- 
+  
   if(!snapshot) return;
-
-
+  
+  clearTubes();
   snapshot.forEach(s => {
-    const m = tubes.find(t => t.name === s.id);
-    if(m){
-      m.position.copy(s.position);
-      m.rotation.y = s.rotationY;
-    }
+    const params = Object.assign({}, s.params);
+    // ensure id is present
+    params.id = s.id;
+    const wireframe = document.getElementById('wireframe').checked;
+    const mesh = createHollowBox(params.width, params.height, params.thickness, params.length, wireframe);
+    mesh.userData = params;
+    mesh.name = s.id;
+    mesh.position.set(s.position[0], s.position[1], s.position[2]);
+    mesh.rotation.y = s.rotationY;
+    scene.add(mesh);
+    tubes.push(mesh);
   });
   refreshList();
   highlightIntersections();
+}
+
+function clearTubes(){
+
+  tubes.forEach(t => {
+    t.traverse(node => {
+      if(node.isMesh){
+        if(node.geometry){ node.geometry.dispose && node.geometry.dispose(); }
+        if(node.material){
+          if(Array.isArray(node.material)){
+            node.material.forEach(m => m.dispose && m.dispose());
+          } else {
+            node.material.dispose && node.material.dispose();
+          }
+        }
+      }
+    });
+    scene.remove(t);
+  });
+  tubes = [];
 }
 
 function refreshList(){
@@ -165,7 +192,7 @@ function selectTube(id){
 }
 
 function highlightIntersections(){
-  
+ 
   for(let i=0;i<tubes.length;i++){
     for(let j=0;j<tubes.length;j++){
       const a = tubes[i], b = tubes[j];
@@ -185,7 +212,7 @@ function highlightIntersections(){
     
         a.children[0].material.color.set(0xffaa33);
         b.children[0].material.color.set(0xffaa33);
-       
+        
         const inter = boxA.clone().intersect(boxB);
         drawIntersectionHelper(inter);
       }
@@ -213,7 +240,7 @@ function drawIntersectionHelper(box){
 
 function snapAngle(angle){
   if(!document.getElementById('snapAngle').checked) return angle;
-  
+
   const to15 = Math.round(angle/15)*15;
   const to45 = Math.round(angle/45)*45;
  
