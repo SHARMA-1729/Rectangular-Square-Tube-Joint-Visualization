@@ -50,8 +50,4 @@ This will open the project in your default browser (see `package.json` scripts).
 
 
 
-## Notes
-
-- This README was created automatically from repository structure. For precise instructions from the technical challenge located at `C:\Users\sharm\Downloads\Technical Challenge (1).pdf`, upload the PDF here or paste its text and I'll regenerate the README with exact requirements.
-
 
