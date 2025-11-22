@@ -48,19 +48,10 @@ This will open the project in your default browser (see `package.json` scripts).
 2. Start the app (`npm start`).
 3. Open dev tools or adjust `src/renderer.js` to change visualization parameters.
 
-## Contributing
 
-Feel free to open issues or pull requests. If this README should reflect the Technical Challenge PDF, please provide the PDF contents and I will update the README to include:
-
-- Acceptance criteria
-- Deliverable checklist
-- Submission or packaging instructions
-
-## License
-
-This project does not include a license file; add a `LICENSE` if you want to publish the code. Suggested: `MIT`.
 
 ## Notes
 
 - This README was created automatically from repository structure. For precise instructions from the technical challenge located at `C:\Users\sharm\Downloads\Technical Challenge (1).pdf`, upload the PDF here or paste its text and I'll regenerate the README with exact requirements.
+
 
